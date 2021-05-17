@@ -1,10 +1,10 @@
-const exprees = require('express');
+const express = require('express');
 const bodyParse = require('body-parser');
 
 
 const mongoose = require('mongoose');
 const Promotions = require('../models/promotions'); 
-const promoRouter = exprees.Router();
+const promoRouter = express.Router();
 promoRouter.use(bodyParse.json());
 
 promoRouter.route('/')
