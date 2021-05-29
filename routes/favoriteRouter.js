@@ -59,16 +59,25 @@ favoriteRouter.route('/')
 favoriteRouter.route('/:favoriteId')
 .options(cors.corsWithOption, (req, res) => { req.sendStatus(200);})
 .get(cors.cors, (req,res, next) =>{
-        Favorites.findById(req.params.favoriteId)
-        .then((favorite) =>{
-            if(!favorite.user.equals(req.user._id)){
-                var err = new Error('Only Creator can perform this');
-                err.status = 401; 
-                return next(err);
+        Favorites.findOne({user: req.user._id})
+        .then((favorites) =>{
+            if(!favorites){
+                res.statusCode = 200;
+                res.setHeader('Content-Type','application/json');
+                return res.json({"exists": false, "favorites": favorites})
             }
-           res.statusCode = 200;
-           res.setHeader('Content-Type', 'application/json');
-           res.json(favorite);
+            else{
+                if(favorites.dishes.indexOf(req.params.dishId) < 0 ){
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                return res.json({"exists": false, "favorites": favorites})
+                }
+                else{
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', ' application/json');
+                    return res.json({"exists": true, "favorites": favorites })
+                }
+            }
         })
         .catch((err) => next(err));
 })
